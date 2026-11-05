@@ -1,0 +1,146 @@
+{
+ "note": "Pixel coordinates refer to img/travis-heights-1913-photo.jpg offset by (+60,+280) i.e. the upright full photo. Lat/lon are present-day OpenStreetMap intersections.",
+ "control_points": [
+  {
+   "name": "THB&Riverside",
+   "px": [
+    393,
+    923
+   ],
+   "lat": 30.24979,
+   "lon": -97.7388
+  },
+  {
+   "name": "THB&Avondale",
+   "px": [
+    660,
+    897
+   ],
+   "lat": 30.24775,
+   "lon": -97.73965
+  },
+  {
+   "name": "THB&Woodland",
+   "px": [
+    1370,
+    850
+   ],
+   "lat": 30.24359,
+   "lon": -97.74216
+  },
+  {
+   "name": "THB&Fairmount",
+   "px": [
+    1511,
+    838
+   ],
+   "lat": 30.24269,
+   "lon": -97.74252
+  },
+  {
+   "name": "THB&Mariposa",
+   "px": [
+    1804,
+    808
+   ],
+   "lat": 30.24027,
+   "lon": -97.74385
+  },
+  {
+   "name": "AltaVista&Woodland",
+   "px": [
+    1370,
+    993
+   ],
+   "lat": 30.24408,
+   "lon": -97.7432
+  },
+  {
+   "name": "AltaVista&Fairmount",
+   "px": [
+    1511,
+    973
+   ],
+   "lat": 30.24317,
+   "lon": -97.74354
+  },
+  {
+   "name": "Kenwood&Fairmount",
+   "px": [
+    1503,
+    668
+   ],
+   "lat": 30.24221,
+   "lon": -97.7415
+  },
+  {
+   "name": "Kenwood&Mariposa",
+   "px": [
+    1893,
+    650
+   ],
+   "lat": 30.23945,
+   "lon": -97.74306
+  },
+  {
+   "name": "AltaVista&Avondale",
+   "px": [
+    620,
+    1057
+   ],
+   "lat": 30.24834,
+   "lon": -97.74074
+  },
+  {
+   "name": "AltaVista&Algarita",
+   "px": [
+    2048,
+    959
+   ],
+   "lat": 30.24009,
+   "lon": -97.74537
+  },
+  {
+   "name": "Kenwood&Algarita",
+   "px": [
+    2144,
+    650
+   ],
+   "lat": 30.23837,
+   "lon": -97.74375
+  },
+  {
+   "name": "Alameda&Riverside",
+   "px": [
+    372,
+    1210
+   ],
+   "lat": 30.25072,
+   "lon": -97.74053
+  }
+ ],
+ "homography_px_to_local_m": [
+  [
+   -0.442446751358613,
+   -0.7360454355251228,
+   1208.5458673270198
+  ],
+  [
+   0.7714656626391736,
+   -0.4688735600254606,
+   -586.9731400341175
+  ],
+  [
+   4.622175048038993e-05,
+   0.00013609962294755754,
+   1.0
+  ]
+ ],
+ "local_frame": {
+  "lat0": 30.244,
+  "lon0": -97.742,
+  "m_per_deg_lon": 96168.04060841633,
+  "m_per_deg_lat": 110950,
+  "y_axis": "south"
+ }
+}

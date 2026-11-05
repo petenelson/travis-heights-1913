@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Travis Heights, 1913 vs. Today</title>
+<meta name="description" content="The original 1913 plat of Travis Heights (Austin, Texas) laid over today's map, with notes on what changed.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4efe4; --ink:#2b2621; --muted:#6d655a; --accent:#a4332a; --line:#d9cfbd;
+    --panel-w: 360px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--paper)}
+  #app{display:flex;height:100%}
+  #panel{width:var(--panel-w);flex:none;display:flex;flex-direction:column;background:var(--paper);border-right:1px solid var(--line);z-index:2}
+  header{padding:18px 20px 12px;border-bottom:1px solid var(--line)}
+  h1{font-family:"Libre Caslon Text",Georgia,serif;font-weight:700;font-size:24px;margin:0 0 4px;letter-spacing:.2px}
+  h1 em{font-weight:400;color:var(--accent)}
+  .sub{font-size:13px;color:var(--muted);line-height:1.45;margin:0}
+  .controls{padding:14px 20px;border-bottom:1px solid var(--line)}
+  .controls label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  .quick{display:flex;gap:6px;margin-top:8px}
+  .quick button,.base button{flex:1;font:inherit;font-size:13px;padding:6px 0;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;color:var(--ink)}
+  .quick button:hover,.base button:hover{border-color:var(--accent)}
+  .base{display:flex;gap:6px;margin-top:12px}
+  .base button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .toggles{display:flex;gap:14px;margin-top:12px;font-size:13px}
+  .toggles input{accent-color:var(--accent)}
+  #list{overflow-y:auto;flex:1;padding:6px 0 16px}
+  .item{display:flex;gap:12px;padding:12px 20px;cursor:pointer;border-left:3px solid transparent}
+  .item:hover{background:#ece5d6}
+  .item.active{background:#e9e0cd;border-left-color:var(--accent)}
+  .num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-weight:600;font-size:13px;display:grid;place-items:center;margin-top:1px}
+  .item h3{margin:0 0 3px;font-size:14.5px;font-weight:600}
+  .item p{margin:0;font-size:13px;line-height:1.5;color:#4a433a}
+  footer{padding:12px 20px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);line-height:1.5}
+  footer a{color:var(--muted)}
+  #map{flex:1;background:#ddd}
+  .pin{background:var(--accent);color:#fff;border:2px solid #fff;border-radius:50%;width:28px!important;height:28px!important;margin:-14px 0 0 -14px!important;display:grid;place-items:center;font:600 13px Inter,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.45)}
+  .leaflet-popup-content{font-family:Inter,sans-serif;font-size:13px;line-height:1.5;margin:12px 14px}
+  .leaflet-popup-content h3{margin:0 0 4px;font-size:14.5px}
+  .cp{width:8px!important;height:8px!important;margin:-4px 0 0 -4px!important;border-radius:50%;background:#1d6fb8;border:1.5px solid #fff}
+  #toggle-panel{display:none}
+  @media (max-width: 760px){
+    #app{flex-direction:column-reverse}
+    #panel{width:100%;height:46%;border-right:0;border-top:1px solid var(--line)}
+    #panel.collapsed{height:auto}
+    #panel.collapsed #list,#panel.collapsed footer{display:none}
+    header{padding:12px 16px 8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    header .sub{display:none}
+    h1{font-size:19px}
+    #toggle-panel{display:block;font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:5px 10px}
+    .controls{padding:10px 16px}
+    .item{padding:10px 16px}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="panel">
+    <header>
+      <div>
+        <h1>Travis Heights <em>1913</em></h1>
+        <p class="sub">The original subdivision plat, lined up with today's streets. Fade between the two, then tap a number to see what changed.</p>
+      </div>
+      <button id="toggle-panel" aria-expanded="true">Hide list</button>
+    </header>
+    <div class="controls">
+      <label for="opacity"><span>1913 plat</span><span id="opv">65%</span></label>
+      <input id="opacity" type="range" min="0" max="100" value="65">
+      <div class="quick">
+        <button data-op="100">1913</button>
+        <button data-op="65">Blend</button>
+        <button data-op="0">Today</button>
+      </div>
+      <div class="base">
+        <button data-base="streets" class="on">Street map</button>
+        <button data-base="aerial">Aerial photo</button>
+      </div>
+      <div class="toggles">
+        <label><input type="checkbox" id="show-notes" checked> Notes</label>
+        <label><input type="checkbox" id="show-cp"> Alignment points</label>
+      </div>
+    </div>
+    <div id="list"></div>
+    <footer>
+      Plat: "Map of Travis Heights," 1913, scale 1 in = 300 ft (<a href="img/travis-heights-1913-photo.jpg">photo of the original</a>). Lined up using 13 street intersections that still exist; expect the old map to be off by about 10–40&nbsp;m in places, from the photo and the 1913 drafting itself.
+      Today's map &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.
+    </footer>
+  </aside>
+  <div id="map" role="region" aria-label="Map"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+const BOUNDS = [[30.235341, -97.750240], [30.252997, -97.733270]];
+
+const NOTES = [
+  { t: "Riverside Drive and the old entrance circle",
+    ll: [30.24985, -97.73865],
+    d: "In 1913 the Boulevard began at a small traffic circle called Park Place, and Riverside Drive was a narrow road curving along the bluff. Today East Riverside is a wide divided road on a straighter line that slices across the corners of the original blocks 27, 28 and 52. The circle is gone, and the Boulevard now runs straight through to Edgecliff Terrace." },
+  { t: "Travis Park and the river",
+    ll: [30.2505, -97.7375],
+    d: "The plat set aside a riverfront strip called Travis Park between Edgecliff Terrace and the Colorado River, which still flowed freely then. Today that ground is parkland on the shore of Lady Bird Lake, the reservoir formed after Longhorn Dam was finished in 1960. Switch to the aerial photo to compare the old riverbank with the lake's shoreline." },
+  { t: "I-35 clips the northeast corner",
+    ll: [30.24849, -97.73579],
+    d: "The easternmost terrace lots near the river (blocks 49 and 50) were platted right up to the edge of the subdivision. I-35 and its ramps now run along that edge and take a bite out of the corner." },
+  { t: "Summit Place, the street that disappeared",
+    ll: [30.24379, -97.73841],
+    d: "The plat's eastern edge was a street called Summit Place. No street follows that line today. Today's Summit Street is a different street, farther east near I-35." },
+  { t: "Harpers Branch, drawn over with lots",
+    ll: [30.24478, -97.73967],
+    d: "The 1913 map doesn't show a creek here; blocks 45 and 46 are just cut into lots. Harpers Branch actually runs through the middle of them, and it is still there as a creek channel winding behind the houses." },
+  { t: "Colorado Court is now Gillespie Place",
+    ll: [30.24049, -97.74135],
+    d: "The horseshoe loop around block 41 was built just as drawn. The shape survives today, but under a new name, Gillespie Place." },
+  { t: "Creekside lots became Blunn Creek Greenbelt",
+    ll: [30.24339, -97.74551],
+    d: "Along the west side the plat ran lots right down to Blunn Creek (the map spells it \"Blun's Creek\"), served by lanes named The Ramble and Sunset Lane. Much of that creek frontage is now public greenbelt instead of house lots." },
+  { t: "Big Stacy Park",
+    ll: [30.23981, -97.74676],
+    d: "The southwest blocks along the creek (around blocks 14–18) are now largely Big Stacy Park, home to the neighborhood pool, instead of the house lots the plat drew." },
+  { t: "Burleson Road, the old southern edge",
+    ll: [30.23888, -97.74637],
+    d: "The plat ends at Burleson Road, a diagonal country road along the southeast edge. There's no Burleson Road here today. Its line is roughly followed by East Live Oak Street, and the neighborhood is now usually said to end farther south, at Oltorf." },
+  { t: "Hancock Branch",
+    ll: [30.23848, -97.74253],
+    d: "A second unmapped creek. Hancock Branch cuts across the southeast blocks (38–40) near Glendale Place, through ground the plat drew as a regular row of lots." }
+];
+
+const CPS = [
+ ["Travis Heights Blvd & Riverside",30.24979,-97.73880],["Travis Heights Blvd & Avondale",30.24775,-97.73965],
+ ["Travis Heights Blvd & Woodland",30.24359,-97.74216],["Travis Heights Blvd & Fairmount",30.24269,-97.74252],
+ ["Travis Heights Blvd & Mariposa",30.24027,-97.74385],["Alta Vista & Woodland",30.24408,-97.74320],
+ ["Alta Vista & Fairmount",30.24317,-97.74354],["Kenwood & Fairmount",30.24221,-97.74150],
+ ["Kenwood & Mariposa",30.23945,-97.74306],["Alta Vista & Avondale",30.24834,-97.74074],
+ ["Alta Vista & Algarita",30.24009,-97.74537],["Kenwood & Algarita",30.23837,-97.74375],
+ ["Alameda & Riverside",30.25072,-97.74053]
+];
+
+const map = L.map('map', { zoomSnap: 0.25, maxZoom: 19 }).fitBounds(BOUNDS, { padding: [10, 10] });
+
+const bases = {
+  streets: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }),
+  aerial: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19, attribution: 'Imagery &copy; Esri, Maxar, Earthstar Geographics' })
+};
+let base = bases.streets.addTo(map);
+
+const plat = L.imageOverlay('img/travis-heights-1913-georeferenced.webp', BOUNDS, { opacity: 0.65, interactive: false }).addTo(map);
+
+// Notes
+const notesLayer = L.layerGroup().addTo(map);
+const markers = NOTES.map((n, i) => {
+  const m = L.marker(n.ll, { icon: L.divIcon({ className: 'pin', html: String(i + 1), iconSize: null }), title: n.t, keyboard: true })
+    .bindPopup(`<h3>${i + 1}. ${n.t}</h3>${n.d}`, { maxWidth: 300 });
+  m.on('popupopen', () => setActive(i));
+  return m.addTo(notesLayer);
+});
+
+const list = document.getElementById('list');
+NOTES.forEach((n, i) => {
+  const el = document.createElement('div');
+  el.className = 'item'; el.tabIndex = 0;
+  el.innerHTML = `<div class="num">${i + 1}</div><div><h3>${n.t}</h3><p>${n.d}</p></div>`;
+  const go = () => {
+    if (!map.hasLayer(notesLayer)) { notesLayer.addTo(map); document.getElementById('show-notes').checked = true; }
+    map.flyTo(n.ll, Math.max(map.getZoom(), 17), { duration: 0.8 });
+    map.once('moveend', () => markers[i].openPopup());
+  };
+  el.addEventListener('click', go);
+  el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  list.appendChild(el);
+});
+function setActive(i) {
+  [...list.children].forEach((c, j) => c.classList.toggle('active', j === i));
+  list.children[i].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+// Alignment points
+const cpLayer = L.layerGroup(CPS.map(([name, lat, lon]) =>
+  L.marker([lat, lon], { icon: L.divIcon({ className: 'cp', iconSize: null }) }).bindTooltip(name)));
+
+// Controls
+const slider = document.getElementById('opacity'), opv = document.getElementById('opv');
+function setOp(v) { slider.value = v; opv.textContent = v + '%'; plat.setOpacity(v / 100); }
+slider.addEventListener('input', () => setOp(+slider.value));
+document.querySelectorAll('[data-op]').forEach(b => b.addEventListener('click', () => setOp(+b.dataset.op)));
+document.querySelectorAll('[data-base]').forEach(b => b.addEventListener('click', () => {
+  map.removeLayer(base); base = bases[b.dataset.base].addTo(map); base.bringToBack();
+  document.querySelectorAll('[data-base]').forEach(x => x.classList.toggle('on', x === b));
+}));
+document.getElementById('show-notes').addEventListener('change', e => e.target.checked ? notesLayer.addTo(map) : map.removeLayer(notesLayer));
+document.getElementById('show-cp').addEventListener('change', e => e.target.checked ? cpLayer.addTo(map) : map.removeLayer(cpLayer));
+const panel = document.getElementById('panel'), tp = document.getElementById('toggle-panel');
+tp.addEventListener('click', () => {
+  const c = panel.classList.toggle('collapsed');
+  tp.textContent = c ? 'Show list' : 'Hide list'; tp.setAttribute('aria-expanded', String(!c));
+  setTimeout(() => map.invalidateSize(), 50);
+});
+</script>
+</body>
+</html>
