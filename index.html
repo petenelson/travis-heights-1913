@@ -66,7 +66,7 @@
     <header>
       <div>
         <h1>Travis Heights <em>1913</em></h1>
-        <p class="sub">The original subdivision plat, lined up with today's streets. Fade between the two, then tap a number to see what changed.</p>
+        <p class="sub">The 234-acre subdivision General William H. Stacy and the Stacy-Robbins Company platted in 1913, lined up with today's streets. Fade between the two, then tap a number to see what changed.</p>
       </div>
       <button id="toggle-panel" aria-expanded="true">Hide list</button>
     </header>
@@ -90,7 +90,7 @@
     <div id="list"></div>
     <footer>
       Plat: "Map of Travis Heights," 1913, scale 1 in = 300 ft (<a href="img/travis-heights-1913-photo.jpg">photo of the original</a>). Lined up using 13 street intersections that still exist; expect the old map to be off by about 10–40&nbsp;m in places, from the photo and the 1913 drafting itself.
-      Today's map &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.
+      History from the <a href="https://atlas.thc.texas.gov/NR/pdfs/100006796/100006796.pdf">Travis Heights–Fairview Park Historic District National Register nomination</a>. Today's map &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.
     </footer>
   </aside>
   <div id="map" role="region" aria-label="Map"></div>
@@ -103,10 +103,10 @@ const BOUNDS = [[30.235341, -97.750240], [30.252997, -97.733270]];
 const NOTES = [
   { t: "Riverside Drive and the old entrance circle",
     ll: [30.24985, -97.73865],
-    d: "In 1913 the Boulevard began at a small traffic circle called Park Place, and Riverside Drive was a narrow road curving along the bluff. Today East Riverside is a wide divided road on a straighter line that slices across the corners of the original blocks 27, 28 and 52. The circle is gone, and the Boulevard now runs straight through to Edgecliff Terrace." },
+    d: "In 1913 the Boulevard began at a small traffic circle called Park Place, and Riverside Drive was a country lane along the bluff. Early building clustered here, along Riverside, Edgecliff Terrace and the streetcar line. Riverside was widened again and again into today's multi-lane road, which cuts across corners of the original blocks 27, 28 and 52. Every original house on its north side was lost to those widenings; the south side still has historic homes. The circle is gone, too." },
   { t: "Travis Park and the river",
     ll: [30.2505, -97.7375],
-    d: "The plat set aside a riverfront strip called Travis Park between Edgecliff Terrace and the Colorado River, which still flowed freely then. Today that ground is parkland on the shore of Lady Bird Lake, the reservoir formed after Longhorn Dam was finished in 1960. Switch to the aerial photo to compare the old riverbank with the lake's shoreline." },
+    d: "The plat set aside a riverfront strip called Travis Park between Edgecliff Terrace and the Colorado River, which still flowed freely then. Edgecliff survives as a little residential island between Riverside and the water. The park strip is now parkland on the shore of Lady Bird Lake, the reservoir formed after Longhorn Dam was finished in 1960. Switch to the aerial photo to compare the old riverbank with the lake's shoreline." },
   { t: "I-35 clips the northeast corner",
     ll: [30.24849, -97.73579],
     d: "The easternmost terrace lots near the river (blocks 49 and 50) were platted right up to the edge of the subdivision. I-35 and its ramps now run along that edge and take a bite out of the corner." },
@@ -119,15 +119,24 @@ const NOTES = [
   { t: "Colorado Court is now Gillespie Place",
     ll: [30.24049, -97.74135],
     d: "The horseshoe loop around block 41 was built just as drawn. The shape survives today, but under a new name, Gillespie Place." },
-  { t: "Creekside lots became Blunn Creek Greenbelt",
+  { t: "The Ramble became the greenbelt",
     ll: [30.24339, -97.74551],
-    d: "Along the west side the plat ran lots right down to Blunn Creek (the map spells it \"Blun's Creek\"), served by lanes named The Ramble and Sunset Lane. Much of that creek frontage is now public greenbelt instead of house lots." },
+    d: "General Stacy set aside the east bank of Blunn Creek as a natural preserve and labeled it \"The Ramble\" on the plat (the map spells the creek \"Blun's Creek\"). The creek lots were steep and hard to sell, so by the late 1920s the land was headed for public use. The city bought creek land for a park in 1928 and acquired the greenbelt in 1929. It's now the Blunn Creek Greenbelt linking Little and Big Stacy parks." },
+  { t: "Little Stacy Park (1929)",
+    ll: [30.24684, -97.74394],
+    d: "Little Stacy Park fills the big bend of Blunn Creek below Alameda Drive, next to the Sunset Lane loop the plat drew. It was created in 1929, the first of the creek parks. Its shelter, built in 1929–30, was designed by architect Hugo F. Kuehne." },
+  { t: "Monroe Street stone bridge (1931)",
+    ll: [30.24597, -97.74472],
+    d: "Where East Monroe crosses Blunn Creek, city engineer Jac Gubbels designed a rustic stone bridge, built in 1931. It's one of the hand-built features added to the creek corridor after the parkland was acquired." },
   { t: "Big Stacy Park",
     ll: [30.23981, -97.74676],
-    d: "The southwest blocks along the creek (around blocks 14–18) are now largely Big Stacy Park, home to the neighborhood pool, instead of the house lots the plat drew." },
+    d: "At the southern tip of the creek corridor, ground the plat drew as house lots around blocks 14–18 became Big Stacy Park in the late 1930s. The WPA built its pool and bathhouses around 1937." },
+  { t: "The streetcar boulevard",
+    ll: [30.24269, -97.74252],
+    d: "Travis Heights Boulevard was laid out along the streetcar line, which ran from Riverside Drive uphill to its end at Live Oak Street. Houses along the line were generally set about 30 feet back. The wide right-of-way you see on the plat is the streetcar's legacy." },
   { t: "Burleson Road, the old southern edge",
     ll: [30.23888, -97.74637],
-    d: "The plat ends at Burleson Road, a diagonal country road along the southeast edge. There's no Burleson Road here today. Its line is roughly followed by East Live Oak Street, and the neighborhood is now usually said to end farther south, at Oltorf." },
+    d: "The plat ends at Burleson Road, a diagonal country road along the southeast edge. There's no Burleson Road here today. Its line is roughly followed by East Live Oak Street, which the National Register nomination treats as the subdivision's south boundary and the end of the streetcar line. The wider neighborhood is now usually said to run on to Oltorf." },
   { t: "Hancock Branch",
     ll: [30.23848, -97.74253],
     d: "A second unmapped creek. Hancock Branch cuts across the southeast blocks (38–40) near Glendale Place, through ground the plat drew as a regular row of lots." }
